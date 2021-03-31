@@ -1,0 +1,230 @@
+{{ template "header.html" .}}
+{{ $hosts := .hosts}}
+{{ $subnets := .subnets}}
+<body>
+<!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+<!-- Start Header Top Area -->
+{{ template "topArea.html"}}
+<!-- End Header Top Area -->
+<!-- Mobile Menu start -->
+<!-- Mobile Menu end -->
+<!-- Main Menu area start-->
+{{template "menu.html"}}
+<!-- Main Menu area End-->
+<!-- Breadcomb area Start-->
+<div class="breadcomb-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="breadcomb-list">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <div class="breadcomb-wp">
+                                <div class="breadcomb-icon">
+                                    <i class="fa fa-users"></i>
+                                </div>
+                                <div class="breadcomb-ctn">
+                                    <h2>All hosts</h2>
+                                    <p>
+                                        <i class="fa fa-random" style="cursor: pointer;" data-toggle="modal"
+                                           data-target="#move_host"> Move device</i>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcomb area End-->
+<!-- Data Table area Start-->
+<div class="data-table-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="data-table-list">
+                    <div class="table-responsive">
+                        <table id="table" class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Host</th>
+                                <th>Macaddress</th>
+                                <th>Ipaddress</th>
+                                <th>Description</th>
+                                <th>Active</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{range $k, $host := $hosts}}
+                            <tr>
+                                <td>{{$host.Host}}</td>
+                                <td>{{$host.Macaddress}}</td>
+                                <td>{{$host.Ipaddress}}</td>
+                                <td>{{$host.Description}}</td>
+                                <td>
+                                    <div class="toggle-select-act">
+                                        <div class="nk-toggle-switch" data-ts-color="green">
+                                            <input id="locked_{{$host.ID}}"
+                                                   onclick="locked({{$host.ID}});"
+                                                   type="checkbox" {{if $host.Activa}}checked{{end}}>
+                                            <label class="ts-helper"></label>
+                                        </div>
+                                    </div>
+                                </td>
+
+                            </tr>
+                            {{end}}
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th>Host</th>
+                                <th>Macaddress</th>
+                                <th>Ipaddress</th>
+                                <th>Description</th>
+                                <th>Active</th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="move_host" role="dialog">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <b>Move divice to another subnet</b>
+                                <br>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="nk-int-mk sl-dp-mn sm-res-mg-t-10">
+                                            <h2>Device</h2>
+                                        </div>
+
+                                        <div class="chosen-select-act fm-cmp-mg">
+                                            <select class="chosen" id="move_mac" data-placeholder="Choose a Macaddress...">
+                                                {{range $k, $host := $hosts}}
+                                                <option value="{{$host.ID}}">{{$host.Host}} -> {{$host.Ipaddress}} -> {{$host.Macaddress}}</option>
+                                                {{end}}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="nk-int-mk sl-dp-mn sm-res-mg-t-10">
+                                            <h2>Subnets</h2>
+                                        </div>
+                                        <div class="chosen-select-act fm-cmp-mg">
+                                            <select id="move_group" class="chosen">
+                                            {{range $k, $subnet := $subnets}}
+                                                {{range $k1, $group := $subnet.ListGroup }}
+                                                    <option value="{{$group.ID}}">{{$group.Group}} -> {{$group.Block}}</option>
+                                                {{end}}
+                                            {{end}}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+
+
+                            </div>
+                            <br>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default"
+                                        onclick="move_mac();">Move
+                                    host
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Data Table area End-->
+
+{{template "footer.html"}}
+<script type="application/javascript">
+    $(document).ready(function () {
+        var query = window.location.search.substring(1);
+
+        $('#table').DataTable({
+            'iDisplayLength': 20,
+        });
+    });
+
+    var macAddress = document.getElementById("move_mac");
+    macAddress.addEventListener("keyup", formatMAC, false);
+
+
+    function move_mac() {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', $('#move_mac')[0].value);
+        data.append('group', $('#move_group')[0].value);
+
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/MoveHost",
+            data: data,
+            success: function (data) {
+                window.location.reload();
+            },
+            error: function () {
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+    function locked(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        data.append('locked', $('#locked_' + val)[0].checked);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/EditActiveHost",
+            data: data,
+            success: function (data) {
+                // parent = $('#pag_' + val)[0].checked;
+                // parent.html(data.msg);
+                // window.location.reload();
+                // window.location.href = "./prestamos"
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+
+</script>
+</body>
+
+</html>

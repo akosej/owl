@@ -1,0 +1,952 @@
+{{ template "header.html" .}}
+{{ $subnet := .subnet}}
+{{ $groups := .groups}}
+{{ $ranges := .ranges}}
+<body>
+<!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+<!-- Start Header Top Area -->
+{{ template "topArea.html"}}
+<!-- End Header Top Area -->
+<!-- Mobile Menu start -->
+<!-- Mobile Menu end -->
+<!-- Main Menu area start-->
+{{template "menu.html"}}
+<!-- Main Menu area End-->
+<!-- Breadcomb area Start-->
+<div class="breadcomb-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="breadcomb-list">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+
+                            <h3>Ranges</h3>
+                            <p>All ranges to subnet | <a href="#" data-toggle="modal"
+                                                         data-target="#add_range">Add range</a></p>
+                            <p class="tab-mg-b-0">
+                            <div class="data-table-list">
+                                <div class="table-responsive">
+                                    <table id="table_ranges" class="table table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th>Initial Ipaddress</th>
+                                            <th>End Ipaddress</th>
+                                            <th>Options</th>
+                                            <th>Active</th>
+
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {{range $k, $range := $ranges}}
+
+                                            <tr>
+                                                <td>{{$range.Ipaddress_initial}} </td>
+                                                <td>{{$range.Ipaddress_end}}</td>
+                                                <td>
+                                                    <i class="fa fa-edit text-success" data-toggle="modal"
+                                                       data-target="#edit_range_{{$range.ID}}"></i> | <i
+                                                            class="fa fa-trash text-danger"
+                                                            data-toggle="modal"
+                                                            data-target="#del_range_{{$range.ID}}"></i></td>
+                                                <td>
+                                                    <div class="toggle-select-act">
+                                                        <div class="nk-toggle-switch" data-ts-color="green">
+                                                            <input id="locked_range_{{$range.ID}}"
+                                                                   onclick="locked_range({{$range.ID}});"
+                                                                   type="checkbox"
+                                                                   {{if $range.Activa}}checked{{end}}>
+                                                            <label class="ts-helper"></label>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <div class="modal fade" id="edit_range_{{$range.ID}}" role="dialog">
+                                                <div class="modal-dialog modal-sm">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal">
+                                                                &times;
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h2>Edit range</h2>
+
+
+                                                            <div class="row">
+                                                                <div class="col-md-4 text-right">
+                                                                    <b>Ipaddress Initial</b>
+                                                                </div>
+                                                                <div class="col-md-8">
+                                                                    <input type="text" id="ip_initial_{{$range.ID}}"
+                                                                           class="form-control ip_address"
+                                                                           value="{{$range.Ipaddress_initial}}">
+                                                                </div>
+                                                            </div>
+                                                            <br>
+                                                            <div class="row">
+                                                                <div class="col-md-4 text-right">
+                                                                    <b>Ipaddress End</b>
+                                                                </div>
+                                                                <div class="col-md-8">
+                                                                    <input type="text" id="ip_end_{{$range.ID}}"
+                                                                           class="form-control ip_address"
+                                                                           value="{{$range.Ipaddress_end}}">
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                        <br>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-default"
+                                                                    onclick="edit_range_subnet({{$range.ID}});">
+                                                                Save
+                                                                range
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal fade" id="del_range_{{$range.ID}}" role="dialog">
+                                                <div class="modal-dialog modal-sm">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close"
+                                                                    data-dismiss="modal">&times;
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h2>Del Range</h2>
+
+                                                            <h3 class="text-danger">{{$range.Ipaddress_initial}}
+                                                                -{{$range.Ipaddress_end}}</h3>
+
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-danger"
+                                                                    onclick="dell_range({{$range.ID}});">Delete
+                                                            </button>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {{end}}
+                                        </tbody>
+                                        <tfoot>
+                                        <tr>
+                                            <th>Initial Ipaddress</th>
+                                            <th>End Ipaddress</th>
+                                            <th>Options</th>
+                                            <th>Active</th>
+                                        </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            </p>
+                            <div class="modal fade" id="add_range" role="dialog">
+                                <div class="modal-dialog modal-sm">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <h2>Add a range to the subnet</h2>
+
+
+                                            <div class="row">
+                                                <div class="col-md-4 text-right">
+                                                    <b>Ipaddress Initial</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input type="text" id="ip_initial" class="form-control ip_address"
+                                                           value="">
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-4 text-right">
+                                                    <b>Ipaddress End</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input type="text" id="ip_end" class="form-control ip_address"
+                                                           value="">
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <br>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default"
+                                                    onclick="add_range_subnet();">
+                                                Save
+                                                range
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Breadcomb area End-->
+<!-- Data Table area Start-->
+
+
+<div class="data-table-area">
+    <div class="container">
+
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="widget-tabs-int">
+                    <div class="tab-hd">
+                        <h2>Groups</h2>
+                        <p>All groups to subnet.</p>
+                    </div>
+                    <div class="widget-tabs-list">
+                        <ul class="nav nav-tabs">
+                            {{range $key, $group := $groups }}
+                                <li class="{{if eq $key 0}}active{{end}}"><a data-toggle="tab"
+                                                                             href="#g_{{$group.ID}}">{{$group.Group}}</a>
+                                </li>
+                            {{end}}
+                            <li><a href="#" data-toggle="modal" data-target="#add_group">Add group</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content tab-custom-st">
+                            {{range $key, $group := $groups }}
+                                <div id="g_{{$group.ID}}" class="tab-pane {{if eq $key 0}}active{{end}} fade in">
+                                    <div class="tab-ctn">
+                                        <p>
+                                        <div class="row">
+                                            <div class="col-md-6">{{$group.Description}}</div>
+                                            <div class="col-md-6">
+                                                <a href="#" data-toggle="modal" data-target="#add_host_{{$group.ID}}">Add
+                                                    Host</a> |
+                                                <a href="#" data-toggle="modal" data-target="#edit_group_{{$group.ID}}">Edit
+                                                    Group</a> |
+                                                <a href="#" data-toggle="modal" data-target="#del_group_{{$group.ID}}">Del
+                                                    Group</a>
+                                            </div>
+                                        </div>
+
+                                        </p>
+                                        <p class="tab-mg-b-0">
+                                        <div class="data-table-list">
+                                            <div class="table-responsive">
+                                                <table id="table_{{$group.ID}}" class="table table-striped">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Host</th>
+                                                        <th>Macaddress</th>
+                                                        <th>Ipaddress</th>
+                                                        <th>Description</th>
+                                                        <th>Options</th>
+                                                        <th>Active</th>
+
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {{range $k, $host := $group.HostsLIST}}
+                                                        {{if eq $host.Uint $group.ID}}
+                                                            <tr>
+                                                                <td>{{$host.Host}} </td>
+                                                                <td>{{$host.Macaddress}}</td>
+                                                                <td>{{$host.Ipaddress}}</td>
+                                                                <td>{{$host.Description}}</td>
+                                                                <td><i class="fa fa-edit text-success"
+                                                                       data-toggle="modal"
+                                                                       data-target="#edit_host_{{$host.ID}}"></i> | <i
+                                                                            class="fa fa-trash text-danger"
+                                                                            data-toggle="modal"
+                                                                            data-target="#del_host_{{$host.ID}}"></i>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="toggle-select-act">
+                                                                        <div class="nk-toggle-switch"
+                                                                             data-ts-color="green">
+                                                                            <input id="locked_{{$host.ID}}"
+                                                                                   onclick="locked({{$host.ID}});"
+                                                                                   type="checkbox"
+                                                                                   {{if $host.Activa}}checked{{end}}>
+                                                                            <label class="ts-helper"></label>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+
+                                                            <div class="modal fade" id="del_host_{{$host.ID}}"
+                                                                 role="dialog">
+                                                                <div class="modal-dialog modal-sm">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <button type="button" class="close"
+                                                                                    data-dismiss="modal">&times;
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <h2>Del Host {{$host.Host}}</h2>
+
+                                                                            <h1 class="text-danger">
+                                                                                Delete {{$host.Ipaddress}}</h1>
+
+                                                                        </div>
+
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn btn-danger"
+                                                                                    onclick="dell({{$host.ID}});">Delete
+                                                                            </button>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="modal fade" id="edit_host_{{$host.ID}}"
+                                                                 role="dialog">
+                                                                <div class="modal-dialog modal-sm">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <button type="button" class="close"
+                                                                                    data-dismiss="modal">&times;
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <h2>Edit a host</h2>
+
+
+                                                                            <div class="row">
+                                                                                <div class="col-md-4 text-right">
+                                                                                    <b>Host name</b>
+                                                                                </div>
+                                                                                <div class="col-md-8">
+                                                                                    <input type="text"
+                                                                                           id="edit_hosts_{{$host.ID}}"
+                                                                                           class="form-control"
+                                                                                           value="{{$host.Host}}">
+                                                                                </div>
+                                                                            </div>
+                                                                            <br>
+                                                                            <div class="row">
+                                                                                <div class="col-md-4 text-right">
+                                                                                    <b>Macaddress</b>
+                                                                                </div>
+                                                                                <div class="col-md-8">
+                                                                                    <input type="text"
+                                                                                           id="edit_macaddress_{{$host.ID}}"
+                                                                                           class="form-control"
+                                                                                           value="{{$host.Macaddress}}"
+                                                                                           placeholder="40:b0:76:62:48:d2">
+                                                                                </div>
+                                                                            </div>
+                                                                            <br>
+                                                                            <div class="row">
+                                                                                <div class="col-md-4 text-right">
+                                                                                    <b>Ipacaddress</b>
+                                                                                </div>
+                                                                                <div class="col-md-8">
+                                                                                    <input type="text"
+                                                                                           id="edit_ipacaddress_{{$host.ID}}"
+                                                                                           class="form-control"
+                                                                                           data-mask="999.999.999.999"
+                                                                                           value="{{$host.Ipaddress}}"
+                                                                                           placeholder="172.16.0">
+                                                                                </div>
+                                                                            </div>
+                                                                            <br>
+                                                                            <div class="row">
+                                                                                <div class="col-md-4 text-right">
+                                                                                    <b>Description</b>
+                                                                                </div>
+                                                                                <div class="col-md-8">
+                                                                                    <input type="text"
+                                                                                           id="edit_host_description_{{$host.ID}}"
+                                                                                           class="form-control"
+                                                                                           value="{{$host.Description}}"
+                                                                                           placeholder="Description....">
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button"
+                                                                                    class="btn btn-default"
+                                                                                    onclick="edit_host_group({{$host.ID}});">
+                                                                                Save
+                                                                                changes
+                                                                            </button>
+                                                                            <button type="button" class="btn btn-danger"
+                                                                                    data-dismiss="modal">Close
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        {{end}}
+
+                                                    {{end}}
+                                                    </tbody>
+                                                    <tfoot>
+                                                    <tr>
+                                                        <th>Host</th>
+                                                        <th>Netmask</th>
+                                                        <th>Macaddress</th>
+                                                        <th>Ipaddress</th>
+                                                        <th>Options</th>
+                                                        <th>Description</th>
+                                                    </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="add_host_{{$group.ID}}" role="dialog">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h2>Add a host to the subnet {{$group.Group}} group</h2>
+
+                                                {{if lt $group.Assig 253 }}
+                                                    <div class="row">
+                                                        <div class="col-md-4 text-right">
+                                                            <b>Host name</b>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <input type="text" id="host_{{$group.ID}}"
+                                                                   class="form-control"
+                                                                   value="{{$group.Group}}-{{$group.IPLIBRE}}">
+                                                        </div>
+                                                    </div>
+                                                    <br>
+                                                    <div class="row">
+                                                        <div class="col-md-4 text-right">
+                                                            <b>Macaddress</b>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <input type="text" id="macaddress_{{$group.ID}}"
+                                                                   class="form-control"
+                                                                   placeholder="40:b0:76:62:48:d2">
+                                                        </div>
+                                                    </div>
+                                                    <br>
+                                                    <div class="row">
+                                                        <div class="col-md-4 text-right">
+                                                            <b>Ipacaddress</b>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <input type="text" id="ipacaddress_{{$group.ID}}"
+                                                                   class="form-control ip_address"
+                                                                   value="{{$group.Block}}.{{$group.IPLIBRE}}"
+                                                                   placeholder="172.16.0">
+                                                        </div>
+                                                    </div>
+                                                    <br>
+                                                    <div class="row">
+                                                        <div class="col-md-4 text-right">
+                                                            <b>Description</b>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <input type="text" id="host_description_{{$group.ID}}"
+                                                                   class="form-control"
+                                                                   placeholder="Description....">
+                                                        </div>
+                                                    </div>
+                                                {{else }}
+                                                    <h2 class="text-danger">End of block</h2>
+                                                {{end}}
+
+                                            </div>
+                                            <br>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default"
+                                                        onclick="add_host_group({{$group.ID}});"
+                                                        {{if eq $group.Assig 253 }}disabled{{end}}>
+                                                    Save
+                                                    host
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="edit_group_{{$group.ID}}" role="dialog">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h2>Edit group {{$group.Group}}</h2>
+                                                <p>
+                                                <div class="row">
+                                                    <div class="col-md-4 text-right">
+                                                        <b>Group name</b>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <input type="text" id="group_edit_group_{{$group.ID}}"
+                                                               class="form-control"
+                                                               value="{{$group.Group}}" placeholder="admins">
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="col-md-4 text-right">
+                                                        <b>Block</b>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <input type="text" id="block_edit_group_{{$group.ID}}"
+                                                               class="form-control"
+                                                               value="{{$group.Block}}" placeholder="172.16.1">
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <div class="col-md-4 text-right">
+                                                        <b>Description</b>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <input type="text" id="group_edit_description_{{$group.ID}}"
+                                                               class="form-control"
+                                                               value="{{$group.Description}}"
+                                                               placeholder="Description....">
+                                                    </div>
+                                                </div>
+
+
+                                                </p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default"
+                                                        onclick="edit_group({{$group.ID}});">Save
+                                                    changes
+                                                </button>
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="del_group_{{$group.ID}}" role="dialog">
+                                    <div class="modal-dialog modal-sm">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h2>Del group</h2>
+                                                <p>
+                                                <h1 class="text-danger">{{$group.Group}}</h1>
+                                                </p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-danger"
+                                                        onclick="del_group({{$group.ID}});">Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {{end}}
+
+                        </div>
+
+
+                        <div class="modal fade" id="add_group" role="dialog">
+                            <div class="modal-dialog modal-sm">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h2>Add new group subnet</h2>
+                                        <p>
+                                        <div class="row">
+                                            <div class="col-md-4 text-right">
+                                                <b>Group name</b>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <input type="text" id="group" class="form-control"
+                                                       value="" placeholder="admins">
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-4 text-right">
+                                                <b>Block</b>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <input type="text" id="block" class="form-control"
+                                                       placeholder="172.16.X">
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-4 text-right">
+                                                <b>Description</b>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <input type="text" id="description" class="form-control"
+                                                       value="" placeholder="Description....">
+                                            </div>
+                                        </div>
+
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" onclick="add_group();">Save
+                                            changes
+                                        </button>
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Data Table area End-->
+{{template "footer.html"}}
+<script type="application/javascript">
+    $(document).ready(function () {
+        var query = window.location.search.substring(1);
+        $('#table_ranges').DataTable({
+            'iDisplayLength': 10,
+        });
+        {{range $key, $group := $groups }}
+        $('#table_{{$group.ID}}').DataTable({
+            'iDisplayLength': 50,
+        });
+        {{end}}
+    });
+    {{range $key, $group := $groups }}
+        var macAddress = document.getElementById("macaddress_{{$group.ID}}");
+        macAddress.addEventListener("keyup", formatMAC, false);
+    {{end}}
+
+    function dell(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/DelHost",
+            data: data,
+            success: function (data) {
+                window.location.reload();
+            },
+            error: function () {
+
+            }
+        });
+    }
+
+    function locked(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        data.append('locked', $('#locked_' + val)[0].checked);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/EditActiveHost",
+            data: data,
+            success: function (data) {
+                notify("top", "right", "fa fa-check", "inverse", "animated flipInY", "animated flipOutY", "Alert", $('#edit_hosts_' + val)[0].value+" state change");
+                // parent = $('#pag_' + val)[0].checked;
+                // parent.html(data.msg);
+                // window.location.reload();
+                // window.location.href = "./prestamos"
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+
+    //-----Ranges
+    function edit_range_subnet(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        data.append('ip_initial', $('#ip_initial_' + val)[0].value);
+        data.append('ip_end', $('#ip_end_' + val)[0].value);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/EditRange",
+            data: data,
+            success: function (data) {
+                // parent = $('#pag_' + val)[0].checked;
+                // parent.html(data.msg);
+                // window.location.reload();
+                window.location.href = "/private/subnet/{{$subnet.ID}}"
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+    function add_range_subnet() {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('subnet', '{{$subnet.ID}}');
+        data.append('ip_initial', $('#ip_initial')[0].value);
+        data.append('ip_end', $('#ip_end')[0].value);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/AddRange",
+            data: data,
+            success: function (data) {
+                // parent = $('#pag_' + val)[0].checked;
+                // parent.html(data.msg);
+                // window.location.reload();
+                window.location.href = "/private/subnet/{{$subnet.ID}}"
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+    function dell_range(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/DelRange",
+            data: data,
+            success: function (data) {
+                // parent = $('#pag_' + val)[0].checked;
+                // parent.html(data.msg);
+                window.location.reload();
+                // window.location.href = "./prestamos"
+            },
+            error: function () {
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+    function locked_range(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        data.append('locked', $('#locked_range_' + val)[0].checked);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/EditActiveRange",
+            data: data,
+            success: function (data) {
+                notify("top", "right", "fa fa-check", "inverse", "animated flipInY", "animated flipOutY", "Alert", "Range state change");
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+    //---- Group
+    function add_group() {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('subnet', "{{$subnet.ID}}");
+        data.append('group', $('#group')[0].value);
+        data.append('block', $('#block')[0].value);
+        data.append('description', $('#description')[0].value);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/AddGroup",
+            data: data,
+            success: function (data) {
+                // parent = $('#pag_' + val)[0].checked;
+                // parent.html(data.msg);
+                // window.location.reload();
+                window.location.href = "/private/subnet/{{$subnet.ID}}"
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+    function edit_group(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+
+        data.append('id', val);
+        data.append('group', $('#group_edit_group_' + val)[0].value);
+        data.append('block', $('#block_edit_group_' + val)[0].value);
+        data.append('description', $('#group_edit_description_' + val)[0].value);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/EditGroup",
+            data: data,
+            success: function (data) {
+                // parent = $('#pag_' + val)[0].checked;
+                // parent.html(data.msg);
+                // window.location.reload();
+                window.location.href = "/private/subnet/{{$subnet.ID}}"
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+    function del_group(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/DelGroup",
+            data: data,
+            success: function (data) {
+                window.location.href = "/private/subnet/{{$subnet.ID}}"
+            },
+            error: function () {
+                alert(data);
+            }
+        });
+    }
+
+    function add_host_group(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('host', $('#host_' + val)[0].value);
+        data.append('macaddress', $('#macaddress_' + val)[0].value);
+        data.append('ipacaddress', $('#ipacaddress_' + val)[0].value);
+        data.append('group', val);
+        data.append('description', $('#host_description_' + val)[0].value);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/AddHostGroup",
+            data: data,
+            success: function (data) {
+                // parent = $('#pag_' + val)[0].checked;
+                // parent.html(data.msg);
+                window.location.reload();
+                // alert(data.msg);
+                {{/*window.location.href = "/private/subnet/{{$subnet.ID}}"*/}}
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+    function edit_host_group(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        data.append('host', $('#edit_hosts_' + val)[0].value);
+        data.append('macaddress', $('#edit_macaddress_' + val)[0].value);
+        data.append('ipacaddress', $('#edit_ipacaddress_' + val)[0].value);
+        data.append('description', $('#edit_host_description_' + val)[0].value);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/EditHostGroup",
+            data: data,
+            success: function (data) {
+                // parent = $('#pag_' + val)[0].checked;
+                // parent.html(data.msg);
+                // window.location.reload();
+                window.location.href = "/private/subnet/{{$subnet.ID}}"
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+
+</script>
+</body>
+</html>

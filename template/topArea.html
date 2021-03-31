@@ -1,0 +1,53 @@
+<div class="header-top-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div class="logo-area">
+                    <img src="/static/logo/3.png" width="50%">
+                </div>
+            </div>
+            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                <div class="header-top-menu">
+                    <ul class="nav navbar-nav notika-top-nav">
+                        <li class="nav-item dropdown">
+                            <a href="#" data-toggle="modal" data-target="#run"><span><i class="fa fa-code"></i></span></a>
+                        </li>
+
+                        <li class="nav-item"><a href="/logout" role="button" aria-expanded="false"
+                                                class="nav-link dropdown-toggle"><span><i
+                                class="fa fa-power-off"></i></span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="run" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <h2>You are sure to rewrite the dhcpd.conf configuration file.</h2>
+                        <p>
+                        <div class="row">
+                            <div class="col-md-4 text-right">
+                                <b>Security code</b>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="password" id="sc" class="form-control"
+                                       value="" placeholder="key">
+                            </div>
+                        </div>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" onclick="run();">Rewrite
+                            file
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

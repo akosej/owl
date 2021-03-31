@@ -1,0 +1,213 @@
+{{ template "header.html" .}}
+{{ $zones := .zones}}
+<body>
+<!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+<!-- Start Header Top Area -->
+{{ template "topArea.html"}}
+<!-- End Header Top Area -->
+<!-- Mobile Menu start -->
+<!-- Mobile Menu end -->
+<!-- Main Menu area start-->
+{{template "menu.html"}}
+<!-- Main Menu area End-->
+<!-- Breadcomb area Start-->
+<div class="breadcomb-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="breadcomb-list">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <div class="breadcomb-wp">
+                                <div class="breadcomb-icon">
+                                    <i class="fa fa-users"></i>
+                                </div>
+                                <div class="breadcomb-ctn">
+                                    <h2>All zones</h2>
+                                    <p>
+                                        <i class="fa fa-plus" style="cursor: pointer;" data-toggle="modal"
+                                           data-target="#add_zone"> Add zone</i>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcomb area End-->
+<!-- Data Table area Start-->
+<div class="data-table-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="data-table-list">
+                    <div class="table-responsive">
+                        <table id="table" class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Active</th>
+                                <th>Options</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{range $k, $zone := $zones}}
+                                <tr>
+                                    <td><a href="/private/dns/zone/{{$zone.ID}}">{{$zone.Name}}</a></td>
+
+
+                                    <td>
+                                        <div class="toggle-select-act">
+                                            <div class="nk-toggle-switch" data-ts-color="green">
+                                                <input id="locked_{{$zone.ID}}"
+                                                       onclick="locked({{$zone.ID}});"
+                                                       type="checkbox" {{if $zone.Active}}checked{{end}}>
+                                                <label class="ts-helper"></label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><i class="fa fa-trash text-danger" onclick="del({{$zone.ID}});"></i></td>
+                                </tr>
+                            {{end}}
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th>Name</th>
+                                <th>Active</th>
+                                <th>Options</th>
+
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal fade" id="add_zone" role="dialog">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-4 text-right">
+                                        <b>Add zone</b>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" id="name_zone"
+                                               class="form-control">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <br>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default"
+                                        onclick="add_zone();">Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- Data Table area End-->
+
+{{template "footer.html"}}
+<script type="application/javascript">
+    $(document).ready(function () {
+        var query = window.location.search.substring(1);
+
+        $('#table').DataTable({
+            'iDisplayLength': 20,
+        });
+    });
+
+
+    function add_zone() {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('name', $('#name_zone')[0].value);
+
+
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/dns/AddZone",
+            data: data,
+            success: function (data) {
+                window.location.reload();
+            },
+            error: function () {
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+    function locked(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        data.append('locked', $('#locked_' + val)[0].checked);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/dns/EditActiveHost",
+            data: data,
+            success: function (data) {
+                // parent = $('#pag_' + val)[0].checked;
+                // parent.html(data.msg);
+                // window.location.reload();
+                // window.location.href = "./prestamos"
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+    function del(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/dns/DelZone",
+            data: data,
+            success: function (data) {
+                window.location.reload();
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+</script>
+</body>
+
+</html>

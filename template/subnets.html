@@ -1,0 +1,442 @@
+{{ template "header.html" .}}
+{{ $subnets := .subnets}}
+<body>
+<!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+<!-- Start Header Top Area -->
+{{ template "topArea.html"}}
+<!-- End Header Top Area -->
+<!-- Mobile Menu start -->
+<!-- Mobile Menu end -->
+<!-- Main Menu area start-->
+{{template "menu.html"}}
+<!-- Main Menu area End-->
+<!-- Breadcomb area Start-->
+<div class="breadcomb-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="breadcomb-list">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <div class="breadcomb-wp">
+                                <div class="breadcomb-icon">
+                                    <i class="fa fa-users"></i>
+                                </div>
+                                <div class="breadcomb-ctn">
+                                    <h2>Subnet list</h2>
+                                    <p><i class="notika-icon notika-edit"
+                                          data-toggle="modal"
+                                          data-target="#add_subnet"> Add subnet</i></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcomb area End-->
+<!-- Data Table area Start-->
+<div class="data-table-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="data-table-list">
+                    <div class="table-responsive">
+                        <table id="table" class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Subnet</th>
+                                <th>Netmask</th>
+                                <th>Server-identifier</th>
+                                <th>Subnet-mask</th>
+                                <th>Routers</th>
+                                <th>Broadcast_address</th>
+                                <th>Options</th>
+                                <th>Active</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{range $k, $subnet := $subnets}}
+                            <tr>
+                                <td><a href="/private/subnet/{{$subnet.ID}}">{{$subnet.Subnet}}</a></td>
+                                <td>{{$subnet.Netmask}}</td>
+                                <td>{{$subnet.ServerIdentifier}}</td>
+                                <td>{{$subnet.SubnetMask}}</td>
+                                <td>{{$subnet.Routers}}</td>
+                                <td>{{$subnet.BroadcastAddress}}</td>
+                                <td>
+                                    <i class="fa fa-edit text-success" data-toggle="modal"
+                                       data-target="#edit_subnet_{{$subnet.ID}}"></i> | <i
+                                        class="fa fa-trash text-danger"
+                                        data-toggle="modal"
+                                        data-target="#del_subnet_{{$subnet.ID}}"></i>
+
+                                <td>
+                                    <div class="toggle-select-act">
+                                        <div class="nk-toggle-switch" data-ts-color="green">
+                                            <input id="locked_{{$subnet.ID}}"
+                                                   onclick="locked({{$subnet.ID}});"
+                                                   type="checkbox" {{if $subnet.Activa}}checked{{end}}>
+                                            <label class="ts-helper"></label>
+                                        </div>
+                                    </div>
+                                </td>
+
+                            </tr>
+
+
+                            <div class="modal fade" id="del_subnet_{{$subnet.ID}}" role="dialog">
+                                <div class="modal-dialog modal-sm">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <h2>Del Subnet {{$subnet.Subnet}}</h2>
+                                            <p>
+                                            <h1 class="text-danger">Delete subnet</h1>
+                                            </p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-danger"
+                                                    onclick="del_subnet({{$subnet.ID}});">Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="edit_subnet_{{$subnet.ID}}" role="dialog">
+                                <div class="modal-dialog modal-sm">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <h2>Edit subnet to server</h2>
+                                            <p>
+                                            <div class="row">
+                                                <div class="col-md-4 text-right">
+                                                    <b>Subnet</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input type="text" id="subnet_{{$subnet.ID}}" class="form-control"
+                                                           value="{{$subnet.Subnet}}" placeholder="172.16.0.0">
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-4 text-right">
+                                                    <b>Netmask</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input type="text" id="netmask_{{$subnet.ID}}" class="form-control"
+                                                           value="{{$subnet.Netmask}}" placeholder="255.255.240.0">
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-4 text-right">
+                                                    <b>Server identifier</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input type="text" id="server_identifier_{{$subnet.ID}}"
+                                                           class="form-control"
+                                                           value="{{$subnet.ServerIdentifier}}"
+                                                           placeholder="172.16.0.253">
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-4 text-right">
+                                                    <b>Subnet mask</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input type="text" id="subnet_mask_{{$subnet.ID}}"
+                                                           class="form-control"
+                                                           value="{{$subnet.SubnetMask}}" placeholder="255.255.240.0">
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-4 text-right">
+                                                    <b>Routers</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input type="text" id="routers_{{$subnet.ID}}" class="form-control"
+                                                           value="{{$subnet.Routers}}" placeholder="172.16.0.254">
+                                                </div>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <div class="col-md-4 text-right">
+                                                    <b>Broadcast address</b>
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <input type="text" id="broadcast_address_{{$subnet.ID}}"
+                                                           class="form-control"
+                                                           value="{{$subnet.BroadcastAddress}}"
+                                                           placeholder="172.16.15.255">
+                                                </div>
+                                            </div>
+
+
+                                            </p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default"
+                                                    onclick="edit_subnet({{$subnet.ID}});">Save
+                                                changes
+                                            </button>
+                                            <button type="button" class="btn btn-danger" data-dismiss="modal">Close
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {{end}}
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th>Subnet</th>
+                                <th>Netmask</th>
+                                <th>Server-identifier</th>
+                                <th>Subnet-mask</th>
+                                <th>Routers</th>
+                                <th>Broadcast_address</th>
+                                <th>Options</th>
+                                <th>Active</th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="add_subnet" role="dialog">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <h2>Add new subnet to server</h2>
+                                <p>
+                                <div class="row">
+                                    <div class="col-md-4 text-right">
+                                        <b>Subnet</b>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" id="subnet" class="form-control"
+                                               value="172.16." placeholder="172.16.0.0">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4 text-right">
+                                        <b>Netmask</b>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" id="netmask" class="form-control"
+                                               value="255.255." placeholder="255.255.240.0">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4 text-right">
+                                        <b>Server identifier</b>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" id="server_identifier" class="form-control"
+                                               value="172.16.0" placeholder="172.16.0.253">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4 text-right">
+                                        <b>Subnet mask</b>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" id="subnet_mask" class="form-control"
+                                               value="255.255." placeholder="255.255.240.0">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4 text-right">
+                                        <b>Routers</b>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" id="routers" class="form-control"
+                                               value="172.16." placeholder="172.16.0.254">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4 text-right">
+                                        <b>Broadcast address</b>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" id="broadcast_address" class="form-control"
+                                               value="172.16." placeholder="172.16.15.255">
+                                    </div>
+                                </div>
+
+
+                                </p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" onclick="add_subnet();">Save
+                                    changes
+                                </button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Data Table area End-->
+
+{{template "footer.html"}}
+<script type="application/javascript">
+    $(document).ready(function () {
+        var query = window.location.search.substring(1);
+
+        $('#table').DataTable({
+            'iDisplayLength': 100,
+            "language": {
+                "lengthMenu": "Mostar _MENU_ paguinas",
+                "zeroRecords": "No encontrado - sorry",
+                "info": "_PAGE_ de _PAGES_",
+                "infoEmpty": "No hay subnet",
+                "infoFiltered": "(filtered from _MAX_ total records)"
+            }
+        });
+    });
+
+    function locked(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        data.append('locked', $('#locked_' + val)[0].checked);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/EditActiveSubnet",
+            data: data,
+            success: function (data) {
+                // parent = $('#pag_' + val)[0].checked;
+                // parent.html(data.msg);
+                // window.location.reload();
+                // window.location.href = "./prestamos"
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+    function edit_subnet(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        data.append('subnet', $('#subnet_'+val)[0].value);
+        data.append('netmask', $('#netmask_'+val)[0].value);
+        data.append('server_identifier', $('#server_identifier_'+val)[0].value);
+        data.append('subnet_mask', $('#subnet_mask_'+val)[0].value);
+        data.append('routers', $('#routers_'+val)[0].value);
+        data.append('broadcast_address', $('#broadcast_address_'+val)[0].value);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/EditSubnet",
+            data: data,
+            success: function (data) {
+                // parent = $('#pag_' + val)[0].checked;
+                // parent.html(data.msg);
+                // window.location.reload();
+                window.location.href = "/private/subnets"
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+    function add_subnet() {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('subnet', $('#subnet')[0].value);
+        data.append('netmask', $('#netmask')[0].value);
+        data.append('server_identifier', $('#server_identifier')[0].value);
+        data.append('subnet_mask', $('#subnet_mask')[0].value);
+        data.append('routers', $('#routers')[0].value);
+        data.append('broadcast_address', $('#broadcast_address')[0].value);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/AddSubnet",
+            data: data,
+            success: function (data) {
+                // parent = $('#pag_' + val)[0].checked;
+                // parent.html(data.msg);
+                // window.location.reload();
+                window.location.href = "/private/subnets"
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+    function del_subnet(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/DelSubnet",
+            data: data,
+            success: function (data) {
+                window.location.href = "/private/subnets"
+            },
+            error: function () {
+                alert(data);
+            }
+        });
+    }
+</script>
+</body>
+
+</html>

@@ -1,0 +1,234 @@
+{{ template "header.html" .}}
+{{ $zone := .zone}}
+{{ $entrys := .entrys}}
+<body>
+<!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+<!-- Start Header Top Area -->
+{{ template "topArea.html"}}
+<!-- End Header Top Area -->
+<!-- Mobile Menu start -->
+<!-- Mobile Menu end -->
+<!-- Main Menu area start-->
+{{template "menu.html"}}
+<!-- Main Menu area End-->
+<!-- Breadcomb area Start-->
+<div class="breadcomb-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="breadcomb-list">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                            <div class="breadcomb-wp">
+                                <div class="breadcomb-icon">
+                                    <i class="fa fa-navicon"></i>
+                                </div>
+                                <div class="breadcomb-ctn">
+                                    <h2>{{$zone.Name}}</h2>
+                                    <p>
+                                        <i class="fa fa-plus" style="cursor: pointer;" data-toggle="modal"
+                                           data-target="#add_entry"> Add entrys</i>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Breadcomb area End-->
+<!-- Data Table area Start-->
+<div class="data-table-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="data-table-list">
+                    <div class="table-responsive">
+                        <table id="table" class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Ipaddress</th>
+                                <th>Active</th>
+                                <th>Options</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{range $k, $entry := $entrys}}
+                                <tr>
+                                    <td>{{$entry.Name}}</td>
+                                    <td>{{$entry.Ipaddress}}</td>
+
+
+                                    <td>
+                                        <div class="toggle-select-act">
+                                            <div class="nk-toggle-switch" data-ts-color="green">
+                                                <input id="locked_{{$entry.ID}}"
+                                                       onclick="locked({{$entry.ID}});"
+                                                       type="checkbox" {{if $entry.Active}}checked{{end}}>
+                                                <label class="ts-helper"></label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><i class="fa fa-trash text-danger" onclick="del({{$entry.ID}});"></i></td>
+
+                                </tr>
+                            {{end}}
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th>Name</th>
+                                <th>Ipaddress</th>
+                                <th>Active</th>
+                                <th>Options</th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal fade" id="add_entry" role="dialog">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <b>Add entry</b>
+                                <br>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4 text-right">
+                                        <b>Name</b>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" id="name_entry"
+                                               class="form-control" value="">
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-4 text-right">
+                                        <b>Ipaddress</b>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" id="ipaddress"
+                                               class="form-control ip_address"
+                                               value="">
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                            <br>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default"
+                                        onclick="addentry();">Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- Data Table area End-->
+
+{{template "footer.html"}}
+<script type="application/javascript">
+    $(document).ready(function () {
+        var query = window.location.search.substring(1);
+
+        $('#table').DataTable({
+            'iDisplayLength': 20,
+        });
+    });
+
+
+    function addentry() {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('name', $('#name_entry')[0].value);
+        data.append('ipaddress', $('#ipaddress')[0].value);
+        data.append('zone', '{{$zone.ID}}');
+        data.append('zone_name', '{{$zone.Name}}');
+
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/dns/AddEntry",
+            data: data,
+            success: function (data) {
+                window.location.reload();
+            },
+            error: function () {
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+    function locked(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        data.append('locked', $('#locked_' + val)[0].checked);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/dns/EditActiveEntry",
+            data: data,
+            success: function (data) {
+                // parent = $('#pag_' + val)[0].checked;
+                // parent.html(data.msg);
+                // window.location.reload();
+                // window.location.href = "./prestamos"
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+    function del(val) {
+        //stop submit the form, we will post it manually.
+        // event.preventDefault();
+        var data = new FormData();
+        data.append('id', val);
+        $.ajax({
+            type: "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            cache: false,
+            url: "/private/dns/DelEntry",
+            data: data,
+            success: function (data) {
+                window.location.reload();
+            },
+            error: function () {
+                alert(data);
+                // alert("Ha ocurrido un error.");
+            }
+        });
+    }
+
+
+</script>
+</body>
+
+</html>
