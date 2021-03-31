@@ -12,11 +12,9 @@ import (
 
 var (
 	mysqlCredentials = Config("user_db") + ":" + Config("pass_db") + "@tcp(" + Config("server_db") + ":" + Config("port_db") + ")/" + Config("name_db") + "?charset=utf8&parseTime=True&loc=Local"
-	//db               *gorm.DB
-	path, _   = os.Getwd()
-	port      = Config("server_port")
-	agentDHCP = Config("serverDHCP")
-	//g                errgroup.Group
+	path, _          = os.Getwd()
+	port             = Config("server_port")
+	agentDHCP        = Config("serverDHCP")
 )
 
 //go:embed css/* fonts/* img/* images/* logo/* js/* template/*

@@ -47,7 +47,7 @@ func engine() *gin.Engine {
 		private.GET("/subnets", pagSubnets)
 		private.GET("/subnet/:id", showGroupSubnet)
 		//-----DNS
-		private.GET("/dns/zones", zoneall)
+		private.GET("/dns/zones", zonal)
 		private.GET("/dns/zone/:id", zonedetails)
 
 		private.POST("/AddSubnet", AddSubnet)
@@ -616,7 +616,7 @@ func fillString(retunString string, toLength int) string {
 
 //--------------------------------------------
 //--------DNS
-func zoneall(c *gin.Context) {
+func zonal(c *gin.Context) {
 	db, _ := gorm.Open("mysql", mysqlCredentials)
 	defer db.Close()
 	var zones []DnsZones

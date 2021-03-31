@@ -8,7 +8,6 @@ import (
 )
 
 //--------------------------------------------------------------------------------
-//EXTRAER VARIABLES DEL FICHERO DE CONFIGURACION
 func Config(data string) string {
 	var value string
 	lines, err := File2lines(path + "/config.owl")
